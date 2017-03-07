@@ -11,6 +11,7 @@ import android.view.View;
 
 public class MenuActivity extends AppCompatActivity {
 
+    public static String model_dino = "cute_dino";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
