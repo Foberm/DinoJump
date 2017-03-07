@@ -5,4 +5,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_game">Game</string>
+    <string name="title_activity_qr">qr</string>
 </resources>
