@@ -14,8 +14,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.Timer;
-
 public class MyView extends View {
     final GestureDetector gestureDetector;
     Bitmap mBitmap = null;
@@ -30,8 +28,8 @@ public class MyView extends View {
     }
 
     private void init(final Context ct) {
-        mBitmap = BitmapFactory.decodeResource(ct.getResources(), R.drawable.proof);
-
+        mBitmap = BitmapFactory.decodeResource(ct.getResources(), R.drawable.dinojump_background);
+        mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth()/2, mBitmap.getHeight());
         mCirclePaint = new Paint();
         mCirclePaint.setColor(Color.BLUE);
         mCirclePaint.setStyle(Paint.Style.FILL);
