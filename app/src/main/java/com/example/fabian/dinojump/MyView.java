@@ -18,51 +18,89 @@ public class MyView extends View {
     final GestureDetector gestureDetector;
     Bitmap mBitmap = null;
     Paint mCirclePaint;
-    Rect mMeasuredRect;
+    Rect mMeasuredRect, bitRect;
+    Bitmap mBitmapA, dino = null;
 
     @Override
     public void onDraw(final Canvas canv) {
-        Log.d("a", "b");
-        canv.drawBitmap(mBitmap, null, mMeasuredRect, null);
-        canv.drawRect(Player.bounding,mCirclePaint);
-    }
 
+        canv.drawBitmap(mBitmap, bitRect, mMeasuredRect, null);
+        //canv.drawBitmap(mBitmapA, bitRect, mMeasuredRect, null);
+        canv.drawBitmap(dino,null, Player.bounding, null);
+    }
+    int backgroundX=0;
     private void init(final Context ct) {
-        mBitmap = BitmapFactory.decodeResource(ct.getResources(), R.drawable.dinojump_background);
-        mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth()/2, mBitmap.getHeight());
-        mCirclePaint = new Paint();
-        mCirclePaint.setColor(Color.BLUE);
-        mCirclePaint.setStyle(Paint.Style.FILL);
-    }
+        mBitmapA = BitmapFactory.decodeResource(ct.getResources(), R.drawable.dinojump_background);
+        dino = BitmapFactory.decodeResource(ct.getResources(), R.drawable.cute_dino);
+        mBitmap = Bitmap.createBitmap(mBitmapA, backgroundX, 0, mBitmapA.getWidth()/2, mBitmapA.getHeight());
 
-    synchronized public void onSwipeTop() {
-        Log.d("swipe", "top");
+        bitRect=new Rect(0,0,mBitmapA.getWidth()/4, mBitmapA.getHeight());
 
         new CountDownTimer(990, 33) {
             public void onTick(long millisUntilFinished) {
-                Player.bounding.top-=5;
-                Player.bounding.bottom-=5;
+               // backgroundX+=2;
+               // mBitmap = null;
+              //  mBitmap = Bitmap.createBitmap(mBitmapA, backgroundX, 0, mBitmapA.getWidth()/2, mBitmapA.getHeight());
+               bitRect.left+=5;
+               bitRect.right+=5;
                 invalidate();
             }
-            public void onFinish() {        new CountDownTimer(660, 33) {
-                public void onTick(long millisUntilFinished) {
-                    Player.bounding.top+=7;
-                    Player.bounding.bottom+=7;
-                    invalidate();
-                }
-                public void onFinish() {}
-            }.start();}
+            public void onFinish() {this.start();}
         }.start();
-
-
-
     }
 
+    synchronized public void onSwipeTop() {
+        if(allowMove) {
+            allowMove = false;
+            new CountDownTimer(500, 33) {
+                public void onTick(long millisUntilFinished) {
+                    Player.bounding.top -= 20;
+                    Player.bounding.bottom -= 20;
+                }
+
+                public void onFinish() {
+                    new CountDownTimer(400, 33) {
+                        public void onTick(long millisUntilFinished) {
+                            Player.bounding.top += 25;
+                            Player.bounding.bottom += 25;
+                        }
+
+                        public void onFinish() {
+                            Player.bounding.top = 800;
+                            Player.bounding.bottom = 1000;
+                            allowMove = true;
+                        }
+                    }.start();
+                }
+            }.start();
+
+
+        }
+    }
     public void onSwipeBottom() {
-        Log.d("swipe", "bottom");
+        if(allowMove) {
+            allowMove = false;
+            new CountDownTimer(660, 33) {
+                public void onTick(long millisUntilFinished) {
+                    Player.bounding.top += 5;
+                }
+
+                public void onFinish() {
+                    new CountDownTimer(660, 33) {
+                        public void onTick(long millisUntilFinished) {
+                            Player.bounding.top -= 5;
+                        }
+
+                        public void onFinish() {
+                            Player.bounding.top=800;
+                            allowMove = true;
+                        }
+                    }.start();
+                }
+            }.start();
+        }
     }
-
-
+boolean allowMove=true;
     /*-------------------DON'T EDIT----------------------------------------*/
 
     public MyView(final Context ct) {
@@ -98,22 +136,35 @@ public class MyView extends View {
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+        private static final int SWIPE_THRESHOLD = 30;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 1;
 
         @Override
-        public boolean onDown(MotionEvent e) {
+        public boolean onDown(final MotionEvent e) {
+            drin=false;
+            new CountDownTimer(200, 1001) {
+                public void onTick(long millisUntilFinished) {
+                }
+                public void onFinish() {
+                    if(!drin){
+
+                        onSwipeTop();
+                    }
+                }
+            }.start();
             return true;
         }
-
+        boolean drin=false;
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
             boolean result = false;
             try {
                 float diffY = e2.getY() - e1.getY();
                 float diffX = e2.getX() - e1.getX();
                 if (Math.abs(diffX) > Math.abs(diffY)) {
                     if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        drin=true;
                         if (diffX > 0) {
                             onSwipeRight();
                         } else {
@@ -123,6 +174,7 @@ public class MyView extends View {
                     }
                 }
                 else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    drin=true;
                     if (diffY > 0) {
                         onSwipeBottom();
                     } else {
