@@ -7,7 +7,7 @@ import android.graphics.Rect;
  */
 
 public class Player {
-    public static Rect bounding = new Rect(100,800,200,900);
+    public static Rect bounding = new Rect(100,800,400,1000);
 
     Player(){
 
